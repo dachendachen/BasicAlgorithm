@@ -1,7 +1,6 @@
 /*
 Algorithm programming assignment 1
 09/2020
-
 */
 
 import java.io.*;
@@ -117,30 +116,31 @@ public class twothree {
 		if(leftmost.child2.guide.compareTo(small) > 0 ){
 			printAll(leftmost.child2, 0);}	
 		}
-	for(int i = h-2 ; i < divergepoint; i++){
+	for(int i = h-2 ; i > divergepoint; i--){
    	
 		InternalNode left_i = (InternalNode)left[i];
 		//assume child0.guide >= small
-		if(left_i.child1.guide.compareTo(small) > 0) printAll(left_i.child1,h-i);
+		
+		if(left_i.child1.guide.compareTo(small) >= 0) printAll(left_i.child1,h-i-1);
 		if((left_i.child2!=null)&&(left_i.child2.guide.compareTo(small) >= 0)){
-					printAll(left_i.child2, h-i);}
+					printAll(left_i.child2, h-i-1);}
 	}
 
 	//process the diverge point
   	InternalNode diverge_point = (InternalNode) left[divergepoint];
 	InternalNode divergenode = (InternalNode) diverge_point.child1;
-	if((divergenode.guide.compareTo(small) >=0 )&&(divergenode.guide.compareTo(large) <= 0 )){
+	if((divergenode.guide.compareTo(small) > 0 )&&(divergenode.guide.compareTo(large) < 0 )){
 	//middle child exists
 			int hh = h - divergepoint;
-			printAll(divergenode.child1, hh);	
+			printAll(divergenode.child1, hh-2);	
 		}
 
 	//right route
 	int newh = divergepoint + 1;
 	for(int j = newh; j < h-1; j++ ){
 		//assume child2 exist and child2.guide > large
-		if(right[j].child0.guide.compareTo(large) <= 0)printAll(right[j].child0, h-j);
-		if(right[j].child1.guide.compareTo(large) <= 0)printAll(right[j].child1, h-j);
+		if(right[j].child0.guide.compareTo(large) < 0)printAll(right[j].child0, h-j-1);
+		if(right[j].child1.guide.compareTo(large) < 0)printAll(right[j].child1, h-j-1);
 	}
 	//rightmost boundary case
 	InternalNode rightmost = (InternalNode) right[h-1];
@@ -184,7 +184,7 @@ public class twothree {
 			output.write(leaf.guide + ' ' + Integer.toString(leaf.value) + '\n' );
 			}
 	else{ //not leaves, do recursion
-		h--;
+		h--;	
 		InternalNode nnn = (InternalNode) n;
 		printAll(nnn.child0, h);
 		printAll(nnn.child1, h);				
@@ -405,5 +405,3 @@ public class twothree {
       return resetGuide(q);
    }
 }
-
-
