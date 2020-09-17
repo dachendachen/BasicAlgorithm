@@ -57,6 +57,9 @@ public class twothree {
 		int fee = scanner.nextInt();
 		insert(planet, fee, tree);
 	}
+	//printAll(tree.root, tree.height);
+	
+	//System.out.println('\n' +"height: "+ tree.height);
 	
 	//queries 
 	int m =scanner.nextInt();
@@ -80,7 +83,7 @@ public class twothree {
    static void printRange(TwoThreeTree tree, String x, String y) throws Exception {
 
 	int h = tree.height;
-
+	//System.out.print("height in printRange: "+h+'\n');
 	//check empty tree
 	if(h == -1) return;
 	
@@ -113,41 +116,84 @@ public class twothree {
 	if(leftmost.child0.guide.compareTo(small) >= 0) printAll(leftmost.child0, 0);
 	if(leftmost.child1.guide.compareTo(small) >= 0) printAll(leftmost.child1, 0); 
 	if(leftmost.child2 != null){
-		if(leftmost.child2.guide.compareTo(small) > 0 ){
+		if(leftmost.child2.guide.compareTo(small) >= 0 ){
 			printAll(leftmost.child2, 0);}	
 		}
-	for(int i = h-2 ; i > divergepoint; i--){
-   	
-		InternalNode left_i = (InternalNode)left[i];
-		//assume child0.guide >= small
-		
-		if(left_i.child1.guide.compareTo(small) >= 0) printAll(left_i.child1,h-i-1);
-		if((left_i.child2!=null)&&(left_i.child2.guide.compareTo(small) >= 0)){
-					printAll(left_i.child2, h-i-1);}
+	for(int i = h-2 ; i > divergepoint-1; i--){
+		InternalNode c0 = (InternalNode) left[i].child0;	
+		InternalNode c1 = (InternalNode) left[i].child1;
+		if(left[i].child2 != null ){
+			InternalNode c2 = (InternalNode) left[i].child2;
+			if(left[i+1].equals(c0)){
+					printAll(c1, h-i-1);
+					printAll(c2, h-i-1);}
+			else if(left[i+1].equals(c1)){
+					printAll(c2, h-i-1);}
+			}
+		else{//child2 NOT exist
+			if(left[i+1].equals(c0)){
+					printAll(c1, h-i-1);}
+
+			}				
+
+	//tedious
+	/*	if(small.compareTo(left[i].child0.guide) <= 0 ){
+			printAll(left[i].child1,h-i-1);
+			if(left[i].child2 != null) printAll(left[i].child2, h-i-1);
+		}
+		else if(small.compareTo(left[i].child1.guide)<=  0){
+			if(left[i].child2 != null){printAll(left[i].child2, h-i-1);}
+		}  */			
 	}
+	
+	//System.out.print("height before the divergepoint : "+h+'\n');
 
 	//process the diverge point
-  	InternalNode diverge_point = (InternalNode) left[divergepoint];
+  	InternalNode diverge_point = (InternalNode) left[divergepoint-1];
+	InternalNode divergechild0 = (InternalNode) diverge_point.child0;
 	InternalNode divergenode = (InternalNode) diverge_point.child1;
-	if((divergenode.guide.compareTo(small) > 0 )&&(divergenode.guide.compareTo(large) < 0 )){
-	//middle child exists
-			int hh = h - divergepoint;
-			printAll(divergenode.child1, hh-2);	
+		//System.out.println('\n' +divergenode.guide + '\n');
+	//if((divergenode.guide.compareTo(small) >= 0 )&&(divergenode.guide.compareTo(large) <= 0 )){
+	//middle child exists                               
+	if(diverge_point.child2 != null){	
+		InternalNode divergechild2 = (InternalNode) diverge_point.child2;
+	 if((left[divergepoint].equals(divergechild0))&&(right[divergepoint].equals(divergechild2))){               				int hh = h - divergepoint; //2
+				printAll(divergenode, hh);
 		}
+			}
+		
 
 	//right route
-	int newh = divergepoint + 1;
-	for(int j = newh; j < h-1; j++ ){
-		//assume child2 exist and child2.guide > large
-		if(right[j].child0.guide.compareTo(large) < 0)printAll(right[j].child0, h-j-1);
-		if(right[j].child1.guide.compareTo(large) < 0)printAll(right[j].child1, h-j-1);
-	}
-	//rightmost boundary case
+	for(int j = divergepoint; j < h-1; j++ ){
+		InternalNode c0 = (InternalNode) right[j].child0;
+		InternalNode c1 = (InternalNode) right[j].child1;
+		if(right[j].child2 != null){// child2 exits and go down the child2, print child0 and child1
+			InternalNode c2 = (InternalNode) right[j].child2;
+			if(right[j+1].equals(c2)){
+					printAll(c0, h-j-1);
+					printAll(c1, h-j-1);}
+			if(right[j+1].equals(c1)){
+					printAll(c0,h-j-1);}
+			}
+		else if(right[j+1].equals(c1)){
+					printAll(c0, h-j-1);}
+	//tedious	
+	/*	if(right[j].child2 != null){
+				if(right[j].child2.guide.compareTo(large) < 0){
+					printAll(right[j].child0, h-j-1);
+					printAll(right[j].child1, h-j-1);}
+				}
+		if(right[j].child1.guide.compareTo(large) < 0){
+				printAll(right[j].child0, h-j-1);}	*/
+		
+		}
+		//rightmost boundary case
 	InternalNode rightmost = (InternalNode) right[h-1];
 	if(rightmost.child0.guide.compareTo(large) <= 0) printAll(rightmost.child0, 0);
 	if(rightmost.child1.guide.compareTo(large) <= 0) printAll(rightmost.child1, 0); 
+
 	if(rightmost.child2 != null){
-		if(rightmost.child2.guide.compareTo(small) <= 0 ){
+		if(rightmost.child2.guide.compareTo(large) <= 0 ){
 			printAll(rightmost.child2, 0);}	
 		}
 	
@@ -161,7 +207,7 @@ public class twothree {
 					printAll(finalNode.child1,0); }
 		if(finalNode.child2 != null){
 		
-		if((finalNode.child2.guide.compareTo(small) >=0 )&&(finalNode.child2.guide.compareTo(large) <= 0 ))
+			if((finalNode.child2.guide.compareTo(small) >=0 )&&(finalNode.child2.guide.compareTo(large) <= 0 ))
 					{printAll(finalNode.child2,0);}
 			}
 		
@@ -222,7 +268,7 @@ public class twothree {
 			p = (InternalNode) p.child2;
 			path[i] = p;
 			}
-	}                                                                                                                                      //if the key is in the tree,handled by printAll()
+	}                                                                                                   //if the key is in the tree,handled by printAll()
 	return path;
 }
 
